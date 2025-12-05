@@ -8,19 +8,19 @@ import {
 
 const MEDIA = {
   logo: '/logo.png',
-  heroVideo: 'https://player.vimeo.com/external/454609743.hd.mp4?s=dc19e13c2fd0d2be3bbdf25d17c49dfc5a5e3ba5&profile_id=175',
-  heroPoster: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1920&auto=format&fit=crop',
+  heroPoster: '/hero-poster.jpg',
 }
 
 const TICKER_ITEMS = [
-  { label: 'Inventory Status', value: '6 vehicles available' },
-  { label: 'New Allocations', value: 'GT3 RS confirmed' },
-  { label: 'Avg Lease Rate', value: '3.1% APR' },
-  { label: 'Acquisition Time', value: '< 48 hours' },
-  { label: 'Global Network', value: '400+ verified dealers' },
-  { label: 'Concierge SLA', value: 'Response < 24h' },
-  { label: 'Recent Delivery', value: 'Ferrari 812 GTS Vancouver' },
-  { label: 'Lease Terms', value: '12-84 months available' },
+  { label: 'Inventory', value: '6 vehicles ready to transact' },
+  { label: 'Featured', value: 'GT3 RS allocation confirmed' },
+  { label: 'Finance', value: 'Lease 12-84 months | from 3.1% APR' },
+  { label: 'Concierge', value: 'Response under 24h' },
+  { label: 'FX Desk', value: 'CNY to CAD / USD / EUR / GBP / AUD / JPY / SGD' },
+  { label: 'FX Update', value: 'Quotes refresh every 30 seconds' },
+  { label: 'Security', value: 'ID-verified counter, CCTV-monitored' },
+  { label: 'Location', value: '1168 W 48th Ave, Vancouver — by appointment' },
+  { label: 'Contact', value: '+1 (604) 674-6299' },
 ]
 
 const CAPABILITIES = [
@@ -57,6 +57,17 @@ const CAPABILITIES = [
       { label: 'Hold Period', value: '18.4 month average' },
     ],
   },
+  {
+    title: 'CURRENCY EXCHANGE DESK',
+    icon: LineChart,
+    summary: 'Live CNY and CAD desk with receipt-backed, appointment-based service.',
+    stats: [
+      { label: 'Pairs', value: 'CNY to CAD, USD, EUR, GBP, AUD, JPY, SGD' },
+      { label: 'Refresh', value: 'Quotes every 30 seconds' },
+      { label: 'Access', value: 'By appointment at Vancouver desk' },
+      { label: 'Security', value: 'ID-verified, controlled counter' },
+    ],
+  },
 ]
 
 const INVENTORY_CARDS = [
@@ -65,7 +76,7 @@ const INVENTORY_CARDS = [
     name: 'Porsche 911 GT3 RS',
     year: '2024',
     status: 'Allocation confirmed',
-    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop',
+    image: '/car-01.jpg',
     price: 'Inquire',
     monthlyFrom: '$4,200',
     specs: [
@@ -80,7 +91,7 @@ const INVENTORY_CARDS = [
     name: 'Ferrari 812 GTS',
     year: '2023',
     status: 'Private treaty',
-    image: 'https://images.unsplash.com/photo-1592198084033-aade902d1aae?q=80&w=1200&auto=format&fit=crop',
+    image: '/car-02.jpg',
     price: 'Inquire',
     monthlyFrom: '$6,800',
     specs: [
@@ -95,7 +106,7 @@ const INVENTORY_CARDS = [
     name: 'Mercedes-Maybach GLS 600',
     year: '2024',
     status: 'Corporate allocation',
-    image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1200&auto=format&fit=crop',
+    image: '/car-03.jpg',
     price: 'Inquire',
     monthlyFrom: '$2,900',
     specs: [
@@ -110,7 +121,7 @@ const INVENTORY_CARDS = [
     name: 'Lamborghini Huracan STO',
     year: '2024',
     status: 'Track-focused',
-    image: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?q=80&w=1200&auto=format&fit=crop',
+    image: '/car-04.jpg',
     price: 'Inquire',
     monthlyFrom: '$5,400',
     specs: [
@@ -125,7 +136,7 @@ const INVENTORY_CARDS = [
     name: 'Range Rover Sport SVR',
     year: '2024',
     status: 'Available now',
-    image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?q=80&w=1200&auto=format&fit=crop',
+    image: '/car-05.jpg',
     price: 'Inquire',
     monthlyFrom: '$2,100',
     specs: [
@@ -140,7 +151,7 @@ const INVENTORY_CARDS = [
     name: 'BMW M8 Competition',
     year: '2024',
     status: 'Available now',
-    image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=1200&auto=format&fit=crop',
+    image: '/car-06.jpg',
     price: 'Inquire',
     monthlyFrom: '$3,200',
     specs: [
@@ -192,7 +203,7 @@ const SERVICES = [
     title: 'BESPOKE ACQUISITION',
     description: 'We secure rare allocations and off-market opportunities through our global dealer network. Every acquisition undergoes forensic due diligence, authentication, and condition assessment.',
     icon: Globe,
-    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop',
+    image: '/service-01.jpg',
     features: [
       { label: 'Sourcing Network', value: '400+ verified dealers globally' },
       { label: 'Acquisition SLA', value: 'Under 48 hours for confirmed allocations' },
@@ -205,7 +216,7 @@ const SERVICES = [
     title: 'PORTFOLIO MANAGEMENT',
     description: 'Comprehensive lifecycle stewardship including custody, insurance placement, maintenance coordination, and performance tracking with quarterly reporting.',
     icon: ShieldCheck,
-    image: 'https://images.unsplash.com/photo-1486496572940-2bb2341fdbdf?q=80&w=1200&auto=format&fit=crop',
+    image: '/service-02.jpg',
     features: [
       { label: 'Storage Solutions', value: 'Climate-controlled with GPS audit trail' },
       { label: 'Insurance', value: 'Collector-grade underwriting & placement' },
@@ -218,7 +229,7 @@ const SERVICES = [
     title: 'EXIT STRATEGY & DISPOSITION',
     description: 'Strategic timing and placement for maximum value realization. We handle private treaty sales, auction coordination, and trade-in valuations.',
     icon: LineChart,
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop',
+    image: '/service-03.jpg',
     features: [
       { label: 'Market Analysis', value: 'Real-time comparable sales data' },
       { label: 'Disposition Channels', value: 'Private treaty, auction, trade-in' },
@@ -329,7 +340,7 @@ function App() {
         <div className="max-w-7xl mx-auto flex justify-between items-center text-xs tracking-[0.16em] uppercase">
           <span className="font-medium">1168 W 48TH AVE, VANCOUVER, BC V6M 2N7</span>
           <div className="hidden md:flex items-center gap-10">
-            <span className="font-medium">+1 (604) 555-0100</span>
+            <span className="font-medium">+1 (604) 674-6299</span>
             <span className="text-zinc-400 font-medium">By appointment only</span>
           </div>
         </div>
@@ -444,23 +455,19 @@ function HomePage({ onNavigate }) {
     <>
       {/* Hero */}
       <section className="relative min-h-screen flex items-center grid-surface bg-black text-white overflow-hidden">
-        <video
-          className="hero-video parallax"
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster={MEDIA.heroPoster}
-          style={{ transform: `translateY(${parallax * 0.08}px)` }}
-        >
-          <source src={MEDIA.heroVideo} type="video/mp4" />
-        </video>
+        <div
+          className="hero-poster parallax"
+          style={{
+            backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.65) 100%), url(${MEDIA.heroPoster})`,
+            transform: `translateY(${parallax * 0.08}px)`,
+          }}
+        />
         <div className="hero-overlay" />
         <div className="relative z-10 w-full">
           <div className="max-w-6xl mx-auto px-6 lg:px-8 py-24 flex flex-col gap-12">
             <Reveal>
               <p className="text-sm tracking-[0.24em] uppercase text-zinc-300 font-medium mb-4">
-                Automotive asset curation
+                Automotive assets & currency desk
               </p>
               <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold leading-[0.92] tracking-tight">
                 The Art
@@ -470,16 +477,17 @@ function HomePage({ onNavigate }) {
             </Reveal>
             <Reveal>
               <p className="text-lg md:text-xl text-zinc-200 max-w-3xl leading-relaxed">
-                Tothemono Investments structures, acquires, and stewards vehicles as an asset class.
-                We operate with the discipline of an investment bank and the discretion of a private office.
+                We curate and structure vehicles as an asset class for principals and family offices. Alongside
+                acquisition and finance, we operate a Vancouver-based CNY/CAD exchange desk with live quotes and
+                controlled handling for travel, remittance, and tuition needs.
               </p>
             </Reveal>
             <Reveal className="flex flex-wrap items-center gap-4">
               <button
-                onClick={() => onNavigate('currency')}
+                onClick={() => onNavigate('services')}
                 className="px-6 py-4 bg-white text-black uppercase tracking-[0.16em] text-xs font-semibold button-primary rounded-none"
               >
-                View currency rates
+                View services
               </button>
               <button
                 onClick={() => onNavigate('concierge')}
@@ -499,7 +507,7 @@ function HomePage({ onNavigate }) {
               </div>
               <div className="flex items-center gap-2">
                 <KeyRound size={16} strokeWidth={1} />
-                Delivery-ready structures
+                Live FX desk refreshed every 30s
               </div>
             </div>
           </div>
@@ -514,15 +522,14 @@ function HomePage({ onNavigate }) {
               Welcome to Tothemono
             </h2>
             <p className="text-3xl md:text-4xl font-semibold leading-tight text-zinc-900">
-              We build performance-grade automotive portfolios for principals and family offices who expect certainty,
-              speed, and silence.
+              We build performance-grade automotive portfolios—and support clients with a dedicated currency desk.
             </p>
           </Reveal>
           <Reveal>
             <p className="text-lg md:text-xl text-zinc-600 max-w-4xl leading-relaxed">
-              From first allocation to final disposition, every vehicle is treated as an asset with a measurable return.
-              We operate across sourcing, capital structuring, insurance placement, storage, and exit, so nothing is
-              left to interpretation.
+              From sourcing and financing rare vehicles to secure storage and exit strategies, we operate with the
+              rigor of an investment office. We also run a Vancouver FX desk (CNY/CAD) for travel, remittance, and
+              tuition clients who value the same discipline and certainty.
             </p>
           </Reveal>
           <Reveal>
@@ -531,7 +538,7 @@ function HomePage({ onNavigate }) {
                 { label: 'Off-market pipeline', value: '400+ verified dealers' },
                 { label: 'Acquisition SLA', value: 'Under 48 hours' },
                 { label: 'Concierge desk', value: 'Response under 24h' },
-                { label: 'Geo coverage', value: 'North America / EU / GCC / APAC' },
+                { label: 'FX desk', value: 'CNY/CAD quotes every 30s, by appointment' },
               ]}
             />
           </Reveal>
@@ -592,10 +599,10 @@ function HomePage({ onNavigate }) {
                 <h3 className="text-3xl md:text-4xl font-semibold leading-tight">Ready to transact.</h3>
               </div>
               <button
-                onClick={() => onNavigate('currency')}
+                onClick={() => onNavigate('services')}
                 className="px-6 py-4 bg-black text-white uppercase tracking-[0.16em] text-xs font-semibold button-primary rounded-none inline-flex items-center gap-2"
               >
-                View live rates
+                View services
                 <ChevronRight size={16} strokeWidth={1} />
               </button>
             </div>
@@ -651,7 +658,7 @@ function HomePage({ onNavigate }) {
                 { label: 'Due diligence', value: 'Forensic VIN, service, and provenance review' },
                 { label: 'Logistics', value: 'Enclosed transport with live GPS and insurance' },
                 { label: 'Storage', value: 'Climate-controlled custody with quarterly audit' },
-                { label: 'Exit strategies', value: 'Auction, private treaty, or trade-in modeling' },
+                { label: 'FX desk controls', value: 'ID-verified, CCTV-monitored counter' },
               ]}
             />
           </Reveal>
@@ -828,10 +835,10 @@ function CurrencyExchangePage() {
           <Reveal>
             <SpecTable
               items={[
-                { label: 'Live desk', value: 'CNY ↔ CAD, USD, EUR, GBP, AUD, JPY, SGD' },
+                { label: 'Live desk', value: 'CNY to CAD, USD, EUR, GBP, AUD, JPY, SGD' },
                 { label: 'Updates', value: 'Fresh quotes every 30 seconds' },
                 { label: 'Settlement', value: 'Cash pickup or bank draft, Vancouver' },
-                { label: 'Contact', value: '+1 (604) 555-0100 or email to book' },
+                { label: 'Contact', value: '+1 (604) 674-6299 or email to book' },
               ]}
             />
           </Reveal>
@@ -939,9 +946,9 @@ function CurrencyExchangePage() {
             <Reveal>
               <div className="contact-card">
                 <p className="text-xs uppercase tracking-[0.16em] text-zinc-500 mb-2">Call or text</p>
-                <p className="text-lg font-semibold text-zinc-900 mb-2">+1 (604) 555-0100</p>
+                <p className="text-lg font-semibold text-zinc-900 mb-2">+1 (604) 674-6299</p>
                 <p className="text-sm text-zinc-600 mb-4">Speak directly with our Vancouver FX desk for a live quote.</p>
-                <a href="tel:+16045550100" className="contact-link">
+                <a href="tel:+16046746299" className="contact-link">
                   Call the desk
                   <ChevronRight size={14} strokeWidth={1} />
                 </a>
@@ -1144,7 +1151,7 @@ function ConciergePage() {
                 type="tel"
                 required
                 className="w-full border-0 border-b border-zinc-300 bg-transparent pb-3 focus:outline-none focus:border-zinc-900 transition-colors text-base font-medium"
-                placeholder="+1 (604) 555-0100"
+                placeholder="+1 (604) 674-6299"
               />
             </div>
             <div>
@@ -1292,7 +1299,7 @@ function ContactPage() {
                   <h2 className="text-sm tracking-[0.18em] uppercase text-zinc-600 font-semibold">Phone</h2>
                 </div>
                 <p className="text-base text-zinc-700 leading-relaxed">
-                  +1 (604) 555-0100
+                  +1 (604) 674-6299
                 </p>
               </div>
             </Reveal>
@@ -1383,7 +1390,7 @@ const Footer = ({ navigate }) => (
               investmenttothemono@gmail.com
             </a>
             <br />
-            +1 (604) 555-0100
+            +1 (604) 674-6299
           </p>
         </div>
         <div>
