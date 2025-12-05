@@ -1,0 +1,264 @@
+@import "tailwindcss";
+
+/* ===========================
+   DESIGN TOKENS - Swiss Precision
+   =========================== */
+
+:root {
+  /* Color Palette */
+  --color-primary: #18181b;
+  --color-secondary: #71717a;
+  --color-tertiary: #a1a1aa;
+  --color-background: #ffffff;
+  --color-surface: #fafafa;
+  --color-border: #e4e4e7;
+
+  /* Spacing Scale (4px base) */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-24: 6rem;     /* 96px */
+  --space-32: 8rem;     /* 128px */
+  --space-40: 10rem;    /* 160px */
+
+  /* Container */
+  --container-max: 1280px;
+  --container-padding: clamp(1.25rem, 5vw, 3rem);
+
+  /* Typography Scale */
+  --text-xs: 0.625rem;     /* 10px */
+  --text-sm: 0.875rem;     /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg: 1.125rem;     /* 18px */
+  --text-xl: 1.25rem;      /* 20px */
+  --text-2xl: 1.5rem;      /* 24px */
+  --text-3xl: 1.875rem;    /* 30px */
+  --text-4xl: 2.25rem;     /* 36px */
+  --text-6xl: 3.75rem;     /* 60px */
+  --text-8xl: 6rem;        /* 96px */
+  --text-9xl: clamp(4rem, 10vw, 8rem); /* Responsive hero */
+
+  /* Font Weights */
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-bold: 700;
+
+  /* Letter Spacing */
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.2em;
+
+  /* Line Height */
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+  --leading-loose: 2;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+/* ===========================
+   BASE STYLES
+   =========================== */
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--color-primary);
+  background-color: var(--color-background);
+  overflow-x: hidden;
+}
+
+/* Smooth Scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Hide Scrollbar */
+::-webkit-scrollbar {
+  width: 0;
+  background: transparent;
+}
+
+/* Focus Styles for Accessibility */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-background);
+}
+
+/* ===========================
+   UTILITY CLASSES
+   =========================== */
+
+.tech-data {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-secondary);
+  text-transform: uppercase;
+}
+
+/* ===========================
+   ANIMATIONS
+   =========================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.page-transition {
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* ===========================
+   COMPONENTS
+   =========================== */
+
+/* Swiss Grid Border */
+.swiss-grid-border {
+  position: relative;
+}
+
+.swiss-grid-border::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 10%;
+  bottom: 10%;
+  width: 1px;
+  background: var(--color-border);
+}
+
+.swiss-grid-border:last-child::after {
+  display: none;
+}
+
+/* Asset Placeholder */
+.asset-placeholder {
+  background: linear-gradient(135deg, #fafafa 0%, #f4f4f5 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.asset-placeholder::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shimmer 3s infinite;
+}
+
+/* Premium Button */
+.premium-button {
+  transition: all var(--transition-base);
+}
+
+.premium-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Form Input Styles */
+.form-input {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  background: transparent;
+  padding-bottom: var(--space-4);
+  font-size: var(--text-base);
+  font-weight: var(--font-light);
+  transition: border-color var(--transition-base);
+}
+
+.form-input:focus {
+  outline: none;
+  border-bottom-color: var(--color-primary);
+}
+
+.form-input.error {
+  border-bottom-color: #dc2626;
+}
+
+/* Container */
+.container-custom {
+  max-width: var(--container-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+/* Section Spacing */
+.section-padding {
+  padding-top: var(--space-24);
+  padding-bottom: var(--space-24);
+}
+
+@media (min-width: 768px) {
+  .section-padding {
+    padding-top: var(--space-32);
+    padding-bottom: var(--space-32);
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-padding {
+    padding-top: var(--space-40);
+    padding-bottom: var(--space-40);
+  }
+}
