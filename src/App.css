@@ -101,6 +101,8 @@ body {
   align-items: center;
   gap: var(--space-7);
   white-space: nowrap;
+  width: max-content;
+  flex-shrink: 0;
   animation: ticker 28s linear infinite;
   padding-block: var(--space-2);
 }
@@ -265,4 +267,240 @@ body {
 
 .parallax {
   will-change: transform;
+}
+
+.exchange-ticker {
+  position: relative;
+  border: 1px solid var(--line);
+  background: linear-gradient(135deg, #0f0f12 0%, #17171c 100%);
+  color: #fff;
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+}
+
+.exchange-ticker::before,
+.exchange-ticker::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.exchange-ticker::before {
+  left: 0;
+  background: linear-gradient(90deg, #0f0f12, transparent);
+}
+
+.exchange-ticker::after {
+  right: 0;
+  background: linear-gradient(-90deg, #0f0f12, transparent);
+}
+
+.exchange-ticker-track {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  white-space: nowrap;
+  width: max-content;
+  flex-shrink: 0;
+  padding: var(--space-3) var(--space-5);
+  animation: exchangeTicker 18s linear infinite;
+}
+
+.exchange-ticker-track.paused {
+  animation-play-state: paused;
+}
+
+.exchange-ticker-item {
+  min-width: 210px;
+  border: 1px solid #1f1f22;
+  background: rgba(255, 255, 255, 0.04);
+  padding: var(--space-3) var(--space-4);
+  display: grid;
+  gap: var(--space-2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+}
+
+.exchange-ticker-item:hover {
+  transform: translateY(-2px);
+}
+
+.exchange-ticker-pair {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.ticker-chip {
+  padding: 6px 10px;
+  border: 1px solid #ffffff1a;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-sm);
+}
+
+.ticker-arrow {
+  color: #9ca3af;
+}
+
+.exchange-ticker-rates {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 12px;
+}
+
+.exchange-ticker-rates span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.exchange-ticker-rates .buy {
+  color: #10b981;
+}
+
+.exchange-ticker-rates .sell {
+  color: #ef4444;
+}
+
+.exchange-ticker-rates .buy::before,
+.exchange-ticker-rates .sell::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+
+.rate-board {
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: var(--space-5);
+  box-shadow: var(--shadow-soft);
+}
+
+.rate-board-compact {
+  padding: var(--space-4);
+}
+
+.rate-card {
+  border: 1px solid var(--line);
+  background: #f8f8fb;
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.rate-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-soft);
+}
+
+.rate-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.rate-pill.buy {
+  color: #0f9f6e;
+}
+
+.rate-pill.sell {
+  color: #c02626;
+}
+
+.sparkline {
+  width: 100%;
+  height: 48px;
+  background: linear-gradient(180deg, rgba(15, 15, 18, 0.02), rgba(15, 15, 18, 0));
+}
+
+.exchange-story {
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-3);
+  box-shadow: var(--shadow-soft);
+}
+
+.story-badge {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+}
+
+.contact-card {
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  height: 100%;
+  box-shadow: var(--shadow-soft);
+}
+
+.contact-card p,
+.contact-card a {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #0f0f12;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 12px;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contact-link:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-strong);
+}
+
+@keyframes exchangeTicker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@media (max-width: 1024px) {
+  .exchange-ticker-item {
+    min-width: 180px;
+  }
+  .rate-card {
+    padding: var(--space-2);
+  }
 }

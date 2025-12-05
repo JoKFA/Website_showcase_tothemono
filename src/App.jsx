@@ -152,6 +152,40 @@ const INVENTORY_CARDS = [
   },
 ]
 
+const EXCHANGE_PAIRS = [
+  { id: 'CNY-USD', base: 'CNY', target: 'USD', mid: 0.1412, history: [0.1401, 0.141, 0.1415, 0.141, 0.1408, 0.1412] },
+  { id: 'CNY-CAD', base: 'CNY', target: 'CAD', mid: 0.1921, history: [0.191, 0.1915, 0.1922, 0.1919, 0.1912, 0.1921] },
+  { id: 'CNY-EUR', base: 'CNY', target: 'EUR', mid: 0.1294, history: [0.128, 0.129, 0.1298, 0.129, 0.1292, 0.1294] },
+  { id: 'CNY-GBP', base: 'CNY', target: 'GBP', mid: 0.1111, history: [0.1105, 0.111, 0.1114, 0.1112, 0.111, 0.1111] },
+  { id: 'CNY-AUD', base: 'CNY', target: 'AUD', mid: 0.2156, history: [0.214, 0.2148, 0.2154, 0.2159, 0.2153, 0.2156] },
+  { id: 'CAD-USD', base: 'CAD', target: 'USD', mid: 0.7425, history: [0.741, 0.7421, 0.7428, 0.7422, 0.7429, 0.7425] },
+  { id: 'CAD-EUR', base: 'CAD', target: 'EUR', mid: 0.6789, history: [0.677, 0.678, 0.679, 0.6784, 0.6788, 0.6789] },
+  { id: 'CAD-GBP', base: 'CAD', target: 'GBP', mid: 0.5862, history: [0.584, 0.585, 0.586, 0.5864, 0.5858, 0.5862] },
+  { id: 'CAD-JPY', base: 'CAD', target: 'JPY', mid: 111.25, history: [110.8, 111.1, 111.4, 111.2, 111.0, 111.25] },
+  { id: 'CAD-SGD', base: 'CAD', target: 'SGD', mid: 0.9823, history: [0.98, 0.9812, 0.982, 0.9828, 0.9821, 0.9823] },
+]
+
+const EXCHANGE_STORIES = [
+  {
+    title: 'Travel-ready cash in hours',
+    copy: 'Reserve your destination currency before you board. Walk-in pickups in Vancouver with transparent pricing and receipt-level verification.',
+    image: '/exchange-story-1.jpg',
+    badge: 'Airports & hotels',
+  },
+  {
+    title: 'Support family abroad with confidence',
+    copy: 'Send CAD or CNY with real-time quotes, identity-verified processing, and clear settlement times for bank drafts or cash.',
+    image: '/exchange-story-2.jpg',
+    badge: 'Remittance',
+  },
+  {
+    title: 'Students and tuition made simple',
+    copy: 'Handle semester payments, housing deposits, or monthly living costs with compliant receipts and predictable settlement.',
+    image: '/exchange-story-3.jpg',
+    badge: 'Education',
+  },
+]
+
 const SERVICES = [
   {
     id: '01',
@@ -200,7 +234,7 @@ const TEAM = [
   { name: 'SOPHIA LAURENT', title: 'CLIENT RELATIONS', id: 'PARTNER-03' },
 ]
 
-const NAV_ITEMS = ['home', 'inventory', 'services', 'concierge', 'about', 'contact']
+const NAV_ITEMS = ['home', 'currency', 'services', 'concierge', 'about', 'contact']
 
 const getPageFromHash = () => {
   if (typeof window === 'undefined') return 'home'
@@ -385,7 +419,7 @@ function App() {
 
       <main className="page-transition">
         {currentPage === 'home' && <HomePage onNavigate={navigate} />}
-        {currentPage === 'inventory' && <InventoryPage />}
+        {currentPage === 'currency' && <CurrencyExchangePage />}
         {currentPage === 'services' && <ServicesPage />}
         {currentPage === 'concierge' && <ConciergePage />}
         {currentPage === 'about' && <AboutPage />}
@@ -442,10 +476,10 @@ function HomePage({ onNavigate }) {
             </Reveal>
             <Reveal className="flex flex-wrap items-center gap-4">
               <button
-                onClick={() => onNavigate('inventory')}
+                onClick={() => onNavigate('currency')}
                 className="px-6 py-4 bg-white text-black uppercase tracking-[0.16em] text-xs font-semibold button-primary rounded-none"
               >
-                View collection
+                View currency rates
               </button>
               <button
                 onClick={() => onNavigate('concierge')}
@@ -558,10 +592,10 @@ function HomePage({ onNavigate }) {
                 <h3 className="text-3xl md:text-4xl font-semibold leading-tight">Ready to transact.</h3>
               </div>
               <button
-                onClick={() => onNavigate('inventory')}
+                onClick={() => onNavigate('currency')}
                 className="px-6 py-4 bg-black text-white uppercase tracking-[0.16em] text-xs font-semibold button-primary rounded-none inline-flex items-center gap-2"
               >
-                View all
+                View live rates
                 <ChevronRight size={16} strokeWidth={1} />
               </button>
             </div>
@@ -627,94 +661,327 @@ function HomePage({ onNavigate }) {
   )
 }
 
-function InventoryPage() {
-  const [selectedFilter, setSelectedFilter] = useState('All')
+const getSpread = (mid) => ({
+  buy: mid * 0.975,
+  sell: mid * 1.025,
+})
 
-  const filters = ['All', 'Supercar', 'SUV', 'Luxury', 'Performance']
+const formatRate = (value) => {
+  if (value >= 50) return value.toFixed(2)
+  if (value >= 5) return value.toFixed(3)
+  return value.toFixed(4)
+}
 
-  const getVehicleCategory = (car) => {
-    const name = car.name.toLowerCase()
-    if (name.includes('porsche') || name.includes('ferrari') || name.includes('lamborghini')) return 'Supercar'
-    if (name.includes('maybach') || name.includes('range rover')) return 'SUV'
-    if (name.includes('bmw')) return 'Performance'
-    return 'Luxury'
-  }
+const formatDelta = (value) => {
+  const abs = Math.abs(value)
+  if (abs >= 1) return abs.toFixed(2)
+  if (abs >= 0.1) return abs.toFixed(3)
+  return abs.toFixed(4)
+}
 
-  const filteredCars = selectedFilter === 'All'
-    ? INVENTORY_CARDS
-    : INVENTORY_CARDS.filter(car => getVehicleCategory(car) === selectedFilter)
+const Sparkline = ({ data, positive }) => {
+  const min = Math.min(...data)
+  const max = Math.max(...data)
+  const range = max - min || 1
+  const points = data.map((value, idx) => {
+    const x = (idx / Math.max(data.length - 1, 1)) * 120
+    const y = 40 - ((value - min) / range) * 32
+    return `${x},${y}`
+  }).join(' ')
 
   return (
-    <section className="grid-surface py-24 px-6 lg:px-10 min-h-screen">
-      <div className="max-w-7xl mx-auto space-y-10">
-        <Reveal>
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <p className="text-sm tracking-[0.18em] uppercase text-zinc-500 font-semibold mb-3">Inventory</p>
-              <h1 className="text-4xl md:text-5xl font-semibold leading-tight">
-                Dossiers designed to transact quickly.
-              </h1>
+    <svg className="sparkline" viewBox="0 0 120 40" preserveAspectRatio="none">
+      <polyline points={points} fill="none" stroke={positive ? '#16a34a' : '#dc2626'} strokeWidth="2" />
+    </svg>
+  )
+}
+
+const ExchangeTicker = ({ pairs }) => {
+  const [paused, setPaused] = useState(false)
+  const tickerPairs = [...pairs, ...pairs]
+
+  const handlePause = (isPaused) => setPaused(isPaused)
+  const handlePointerDown = () => setPaused(true)
+  const handlePointerUp = () => setPaused(false)
+
+  return (
+    <div
+      className="exchange-ticker"
+      onMouseEnter={() => handlePause(true)}
+      onMouseLeave={() => handlePause(false)}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+      onTouchEnd={handlePointerUp}
+    >
+      <div className={`exchange-ticker-track ${paused ? 'paused' : ''}`}>
+        {tickerPairs.map((pair, idx) => {
+          const { buy, sell } = getSpread(pair.mid)
+          return (
+            <div key={`${pair.id}-${idx}`} className="exchange-ticker-item">
+              <div className="exchange-ticker-pair">
+                <span className="ticker-chip">{pair.base}</span>
+                <span className="ticker-arrow">→</span>
+                <span className="ticker-chip">{pair.target}</span>
+              </div>
+              <div className="exchange-ticker-rates">
+                <span className="buy">Buy {formatRate(buy)}</span>
+                <span className="sell">Sell {formatRate(sell)}</span>
+              </div>
             </div>
-            <div className="flex items-center gap-3 flex-wrap text-sm uppercase tracking-[0.14em]">
-              {filters.map((filter) => (
-                <button
-                  key={filter}
-                  onClick={() => setSelectedFilter(filter)}
-                  className={`px-4 py-2 border transition-all ${
-                    selectedFilter === filter
-                      ? 'border-zinc-900 bg-zinc-900 text-white'
-                      : 'border-zinc-300 text-zinc-600 hover:border-zinc-900 hover:text-zinc-900'
-                  }`}
-                >
-                  {filter}
-                </button>
-              ))}
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+const RateBoard = ({ base, pairs, compact = false }) => (
+  <div className={`rate-board ${compact ? 'rate-board-compact' : ''}`}>
+    <div className="flex items-center justify-between gap-4 mb-4">
+      <div>
+        <p className="text-sm tracking-[0.18em] uppercase text-zinc-500 font-semibold mb-2">{base} desk</p>
+        <h3 className="text-2xl md:text-3xl font-semibold leading-tight text-zinc-900">
+          {base} to major currencies in real time
+        </h3>
+      </div>
+      <span className="tech-data hidden md:block">Refresh: 30s cadence</span>
+    </div>
+    <div className={`grid grid-cols-1 sm:grid-cols-2 ${compact ? 'gap-3' : 'gap-4'}`}>
+      {pairs.map((pair) => {
+        const { buy, sell } = getSpread(pair.mid)
+        const last = pair.history[pair.history.length - 2] ?? pair.mid
+        const delta = pair.mid - last
+        const positive = delta >= 0
+
+        return (
+          <div key={pair.id} className="rate-card">
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <p className="text-xs tracking-[0.14em] uppercase text-zinc-500 mb-1">
+                  {pair.base} → {pair.target}
+                </p>
+                <p className="text-xl font-semibold text-zinc-900">{formatRate(pair.mid)}</p>
+              </div>
+              <span className={`text-xs font-semibold ${positive ? 'text-emerald-600' : 'text-rose-600'}`}>
+                {positive ? '+' : '-'}
+                {formatDelta(delta)}
+              </span>
             </div>
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <span className="rate-pill buy">Buy {formatRate(buy)}</span>
+              <span className="rate-pill sell">Sell {formatRate(sell)}</span>
+            </div>
+            <Sparkline data={pair.history} positive={positive} />
           </div>
-        </Reveal>
+        )
+      })}
+    </div>
+  </div>
+)
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredCars.map((car) => (
-            <Reveal key={car.id}>
-              <div className="border border-zinc-200 bg-white overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
-                {/* Vehicle Image */}
-                <div className="relative aspect-[4/3] overflow-hidden bg-zinc-100">
-                  <img
-                    src={car.image}
-                    alt={car.name}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-2">
-                    <span className="tech-data text-zinc-900">{car.id}</span>
+function CurrencyExchangePage() {
+  const [pairs, setPairs] = useState(() =>
+    EXCHANGE_PAIRS.map((pair) => ({
+      ...pair,
+      history: [...pair.history],
+    }))
+  )
+  const [activeDesk, setActiveDesk] = useState('CNY')
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPairs((prev) =>
+        prev.map((pair) => {
+          const drift = 1 + (Math.random() - 0.5) * 0.002
+          const decimals = pair.target === 'JPY' ? 2 : 4
+          const mid = Number(Math.max(0.0001, pair.mid * drift).toFixed(decimals))
+          const history = [...pair.history.slice(-11), mid]
+          return { ...pair, mid, history }
+        })
+      )
+    }, 30000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const cnyPairs = pairs.filter((pair) => pair.base === 'CNY')
+  const cadPairs = pairs.filter((pair) => pair.base === 'CAD')
+
+  return (
+    <>
+      <section className="grid-surface bg-black text-white py-24 px-6 lg:px-10">
+        <div className="max-w-6xl mx-auto space-y-10">
+          <Reveal>
+            <p className="text-sm tracking-[0.18em] uppercase text-zinc-300 font-semibold mb-3">
+              Currency exchange
+            </p>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold leading-[1.05]">
+              CNY and CAD exchange you can trust, updated while you watch.
+            </h1>
+          </Reveal>
+          <Reveal>
+            <p className="text-lg text-zinc-200 max-w-3xl leading-relaxed">
+              Appointment-based, receipt-backed cash handling with verified ID and clear settlement times. Hover or
+              touch-and-hold the ticker to pause a quote before you confirm.
+            </p>
+          </Reveal>
+          <Reveal>
+            <SpecTable
+              items={[
+                { label: 'Live desk', value: 'CNY ↔ CAD, USD, EUR, GBP, AUD, JPY, SGD' },
+                { label: 'Updates', value: 'Fresh quotes every 30 seconds' },
+                { label: 'Settlement', value: 'Cash pickup or bank draft, Vancouver' },
+                { label: 'Contact', value: '+1 (604) 555-0100 or email to book' },
+              ]}
+            />
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="grid-surface bg-white py-24 px-6 lg:px-10">
+        <div className="max-w-7xl mx-auto space-y-10">
+          <Reveal>
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <p className="text-sm tracking-[0.18em] uppercase text-zinc-500 font-semibold mb-3">
+                  Live rates
+                </p>
+                <h2 className="text-3xl md:text-4xl font-semibold leading-tight">
+                  CNY and CAD to major currencies with rolling ticker and sparklines.
+                </h2>
+              </div>
+              <span className="tech-data">Hover or hold to pause the ticker</span>
+            </div>
+          </Reveal>
+
+          <ExchangeTicker pairs={pairs} />
+
+          <div className="xl:hidden flex items-center gap-3">
+            {['CNY', 'CAD'].map((desk) => (
+              <button
+                key={desk}
+                onClick={() => setActiveDesk(desk)}
+                className={`px-4 py-2 text-xs uppercase tracking-[0.14em] border ${
+                  activeDesk === desk
+                    ? 'bg-black text-white border-black'
+                    : 'border-zinc-300 text-zinc-600'
+                }`}
+              >
+                {desk} desk
+              </button>
+            ))}
+          </div>
+
+          <div className="xl:hidden">
+            <Reveal>
+              <RateBoard
+                base={activeDesk}
+                pairs={activeDesk === 'CNY' ? cnyPairs : cadPairs}
+                compact
+              />
+            </Reveal>
+          </div>
+
+          <div className="hidden xl:grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <Reveal>
+              <RateBoard base="CNY" pairs={cnyPairs} />
+            </Reveal>
+            <Reveal>
+              <RateBoard base="CAD" pairs={cadPairs} />
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid-surface bg-zinc-50 border-y border-zinc-200 py-24 px-6 lg:px-10">
+        <div className="max-w-7xl mx-auto space-y-10">
+          <Reveal>
+            <div className="text-center space-y-3">
+              <p className="text-sm tracking-[0.18em] uppercase text-zinc-500 font-semibold">
+                Why clients choose us
+              </p>
+              <h3 className="text-3xl md:text-4xl font-semibold leading-tight">
+                Vancouver currency exchange for every need.
+              </h3>
+            </div>
+          </Reveal>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {EXCHANGE_STORIES.map((story) => (
+              <Reveal key={story.title} className="h-full">
+                <div className="exchange-story h-full">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
+                    <img src={story.image} alt={story.title} className="w-full h-full object-cover" />
+                    <div className="story-badge">{story.badge}</div>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                    <p className="text-white text-lg font-semibold">{car.monthlyFrom}/mo</p>
+                  <div className="space-y-3">
+                    <h4 className="text-lg font-semibold">{story.title}</h4>
+                    <p className="text-sm text-zinc-600 leading-relaxed">{story.copy}</p>
                   </div>
                 </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
 
-                {/* Vehicle Details */}
-                <div className="p-6 space-y-4">
-                  <div>
-                    <p className="text-xl font-semibold leading-tight mb-1">{car.name}</p>
-                    <p className="text-sm text-zinc-500">Model Year {car.year}</p>
-                  </div>
+      <section className="grid-surface bg-white py-24 px-6 lg:px-10">
+        <div className="max-w-6xl mx-auto space-y-10">
+          <Reveal>
+            <h3 className="text-sm tracking-[0.18em] uppercase text-zinc-500 font-semibold mb-3">
+              Connect with the desk
+            </h3>
+            <h4 className="text-3xl md:text-4xl font-semibold leading-tight">
+              Ready to lock a rate? Choose how you want to reach us.
+            </h4>
+          </Reveal>
 
-                  <SpecTable items={car.specs} />
-
-                  <a
-                    href={`mailto:investmenttothemono@gmail.com?subject=Inquiry: ${car.name} (${car.year})&body=Hello, I'm interested in learning more about the ${car.name} (ID: ${car.id}). Please provide pricing and availability details.`}
-                    className="w-full mt-2 px-4 py-3 bg-black text-white uppercase tracking-[0.14em] text-xs font-semibold hover:bg-zinc-800 transition-colors inline-flex items-center justify-center gap-2"
-                  >
-                    Inquire for price
-                    <ChevronRight size={14} strokeWidth={1} />
-                  </a>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Reveal>
+              <div className="contact-card">
+                <p className="text-xs uppercase tracking-[0.16em] text-zinc-500 mb-2">Call or text</p>
+                <p className="text-lg font-semibold text-zinc-900 mb-2">+1 (604) 555-0100</p>
+                <p className="text-sm text-zinc-600 mb-4">Speak directly with our Vancouver FX desk for a live quote.</p>
+                <a href="tel:+16045550100" className="contact-link">
+                  Call the desk
+                  <ChevronRight size={14} strokeWidth={1} />
+                </a>
               </div>
             </Reveal>
-          ))}
+
+            <Reveal>
+              <div className="contact-card">
+                <p className="text-xs uppercase tracking-[0.16em] text-zinc-500 mb-2">Email</p>
+                <p className="text-lg font-semibold text-zinc-900 mb-2">investmenttothemono@gmail.com</p>
+                <p className="text-sm text-zinc-600 mb-4">
+                  Send the currency and amount you need. We reply within one business day.
+                </p>
+                <a href="mailto:investmenttothemono@gmail.com" className="contact-link">
+                  Email for a quote
+                  <ChevronRight size={14} strokeWidth={1} />
+                </a>
+              </div>
+            </Reveal>
+
+            <Reveal>
+              <div className="contact-card">
+                <p className="text-xs uppercase tracking-[0.16em] text-zinc-500 mb-2">Visit</p>
+                <p className="text-lg font-semibold text-zinc-900 mb-2">1168 W 48th Ave, Vancouver</p>
+                <p className="text-sm text-zinc-600 mb-4">Book an appointment for in-person cash pickup or settlement.</p>
+                <a
+                  href="https://maps.google.com/?q=1168+W+48th+Ave,+Vancouver,+BC+V6M+2N7"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="contact-link"
+                >
+                  Plan your visit
+                  <ChevronRight size={14} strokeWidth={1} />
+                </a>
+              </div>
+            </Reveal>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   )
 }
 
