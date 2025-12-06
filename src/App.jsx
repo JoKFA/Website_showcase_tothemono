@@ -73,29 +73,29 @@ const CAPABILITIES = [
 const INVENTORY_CARDS = [
   {
     id: '01',
-    name: 'Porsche 911 GT3 RS',
+    name: 'Porsche Panamera Turbo',
     year: '2024',
     status: 'Allocation confirmed',
     image: '/car-01.jpg',
     price: 'Inquire',
-    monthlyFrom: '$4,200',
+    monthlyFrom: '$3,400',
     specs: [
-      { label: 'Powertrain', value: '4.0L NA / PDK' },
+      { label: 'Powertrain', value: '4.0L Twin-Turbo V8' },
       { label: '0-60', value: '3.0s' },
-      { label: 'Colorway', value: 'PTS Black Olive' },
+      { label: 'Generation', value: '2nd Gen (971)' },
       { label: 'Mileage', value: 'Delivery miles' },
     ],
   },
   {
     id: '02',
-    name: 'Ferrari 812 GTS',
+    name: 'Ferrari F8 Tributo',
     year: '2023',
     status: 'Private treaty',
     image: '/car-02.jpg',
     price: 'Inquire',
-    monthlyFrom: '$6,800',
+    monthlyFrom: '$5,800',
     specs: [
-      { label: 'Power', value: '789 hp V12' },
+      { label: 'Power', value: '710 hp Twin-Turbo V8' },
       { label: '0-60', value: '2.9s' },
       { label: 'Provenance', value: 'Single owner / documented' },
       { label: 'Delivery', value: 'FOB Vancouver' },
@@ -103,16 +103,16 @@ const INVENTORY_CARDS = [
   },
   {
     id: '03',
-    name: 'Mercedes-Maybach GLS 600',
+    name: 'Mercedes-AMG GT R Pro',
     year: '2024',
-    status: 'Corporate allocation',
+    status: 'Track-ready',
     image: '/car-03.jpg',
     price: 'Inquire',
-    monthlyFrom: '$2,900',
+    monthlyFrom: '$4,200',
     specs: [
-      { label: 'Seating', value: 'Executive 4+1' },
-      { label: 'Packages', value: 'Night / Chauffeur' },
-      { label: 'Lead Time', value: '< 14 days' },
+      { label: 'Power', value: '577 hp Twin-Turbo V8' },
+      { label: '0-60', value: '3.5s' },
+      { label: 'Aero', value: 'Track Package' },
       { label: 'Finance', value: 'Structure-ready' },
     ],
   },
@@ -203,7 +203,7 @@ const SERVICES = [
     title: 'BESPOKE ACQUISITION',
     description: 'We secure rare allocations and off-market opportunities through our global dealer network. Every acquisition undergoes forensic due diligence, authentication, and condition assessment.',
     icon: Globe,
-    image: '/service-01.jpg',
+    image: '/car-04.jpg',
     features: [
       { label: 'Sourcing Network', value: '400+ verified dealers globally' },
       { label: 'Acquisition SLA', value: 'Under 48 hours for confirmed allocations' },
@@ -240,9 +240,24 @@ const SERVICES = [
 ]
 
 const TEAM = [
-  { name: 'ALEXANDRA CHEN', title: 'FOUNDING PARTNER', id: 'PARTNER-01' },
-  { name: 'MARCUS REID', title: 'HEAD OF ACQUISITIONS', id: 'PARTNER-02' },
-  { name: 'SOPHIA LAURENT', title: 'CLIENT RELATIONS', id: 'PARTNER-03' },
+  {
+    name: 'ALEXANDRA CHEN',
+    title: 'FOUNDING PARTNER',
+    id: 'PARTNER-01',
+    bio: 'Former automotive finance director with 15 years structuring high-value leases. Specializes in cross-border transactions and allocation strategy.'
+  },
+  {
+    name: 'MARCUS REID',
+    title: 'HEAD OF ACQUISITIONS',
+    id: 'PARTNER-02',
+    bio: 'Collector and dealer network specialist. Built relationships with 400+ verified partners across North America, Europe, and the GCC.'
+  },
+  {
+    name: 'SOPHIA LAURENT',
+    title: 'CLIENT RELATIONS',
+    id: 'PARTNER-03',
+    bio: 'Private banking background with expertise in UHNW client service. Manages all concierge requests and ensures seamless delivery.'
+  },
 ]
 
 const NAV_ITEMS = ['home', 'currency', 'services', 'concierge', 'about', 'contact']
@@ -250,6 +265,7 @@ const NAV_ITEMS = ['home', 'currency', 'services', 'concierge', 'about', 'contac
 const getPageFromHash = () => {
   if (typeof window === 'undefined') return 'home'
   const hash = window.location.hash.replace('#', '')
+  if (hash === 'lease') return 'lease'
   return NAV_ITEMS.includes(hash) ? hash : 'home'
 }
 
@@ -314,6 +330,10 @@ const TickerBar = () => (
 function App() {
   const [currentPage, setCurrentPage] = useState(getPageFromHash())
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [servicesMenuOpen, setServicesMenuOpen] = useState(false)
+  const [selectedLeaseVehicle, setSelectedLeaseVehicle] = useState(null)
+  const servicesDropdownRef = useRef(null)
+  const servicesTimeoutRef = useRef(null)
 
   useEffect(() => {
     const syncFromHash = () => setCurrentPage(getPageFromHash())
@@ -322,8 +342,34 @@ function App() {
     return () => window.removeEventListener('hashchange', syncFromHash)
   }, [])
 
-  const navigate = (page) => {
+  // Close services dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (servicesDropdownRef.current && !servicesDropdownRef.current.contains(event.target)) {
+        setServicesMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const handleServicesMouseEnter = () => {
+    if (servicesTimeoutRef.current) clearTimeout(servicesTimeoutRef.current)
+    setServicesMenuOpen(true)
+  }
+
+  const handleServicesMouseLeave = () => {
+    servicesTimeoutRef.current = setTimeout(() => setServicesMenuOpen(false), 150)
+  }
+
+  const navigate = (page, vehicleId = null) => {
     setMobileMenuOpen(false)
+    setServicesMenuOpen(false)
+    if (vehicleId) {
+      setSelectedLeaseVehicle(vehicleId)
+    } else if (page !== 'lease') {
+      setSelectedLeaseVehicle(null)
+    }
     const targetHash = `#${page}`
     if (window.location.hash !== targetHash) {
       window.location.hash = page
@@ -361,17 +407,57 @@ function App() {
             </button>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-6 xl:gap-8">
+            <div className="hidden lg:flex items-center gap-6 xl:gap-8 relative">
               {NAV_ITEMS.map((item) => (
-                <button
-                  key={item}
-                  onClick={() => navigate(item)}
-                  className={`text-xs tracking-[0.16em] uppercase font-semibold transition-colors whitespace-nowrap ${
-                    currentPage === item ? 'text-zinc-900' : 'text-zinc-500 hover:text-zinc-900'
-                  }`}
-                >
-                  {item}
-                </button>
+                item === 'services' ? (
+                  <div
+                    key={item}
+                    className="relative"
+                    ref={servicesDropdownRef}
+                    onMouseEnter={handleServicesMouseEnter}
+                    onMouseLeave={handleServicesMouseLeave}
+                  >
+                    <button
+                      onClick={() => setServicesMenuOpen(!servicesMenuOpen)}
+                      className={`flex items-center gap-2 text-xs tracking-[0.16em] uppercase font-semibold transition-colors whitespace-nowrap ${
+                        currentPage === 'services' || currentPage === 'lease' ? 'text-zinc-900' : 'text-zinc-500 hover:text-zinc-900'
+                      }`}
+                    >
+                      {item}
+                      <ChevronRight
+                        size={14}
+                        strokeWidth={1}
+                        className={`transition-transform ${servicesMenuOpen ? 'rotate-90' : 'rotate-0'}`}
+                      />
+                    </button>
+                    {servicesMenuOpen && (
+                      <div className="absolute left-0 mt-3 w-48 bg-white border border-zinc-200 shadow-xl z-30">
+                        <button
+                          onClick={() => navigate('services')}
+                          className={`w-full text-left px-4 py-3 text-sm tracking-[0.12em] uppercase hover:bg-zinc-50 transition-colors ${currentPage === 'services' ? 'bg-zinc-50 font-semibold' : ''}`}
+                        >
+                          Services overview
+                        </button>
+                        <button
+                          onClick={() => navigate('lease')}
+                          className={`w-full text-left px-4 py-3 text-sm tracking-[0.12em] uppercase hover:bg-zinc-50 transition-colors ${currentPage === 'lease' ? 'bg-zinc-50 font-semibold' : ''}`}
+                        >
+                          Lease a vehicle
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    key={item}
+                    onClick={() => navigate(item)}
+                    className={`text-xs tracking-[0.16em] uppercase font-semibold transition-colors whitespace-nowrap ${
+                      currentPage === item ? 'text-zinc-900' : 'text-zinc-500 hover:text-zinc-900'
+                    }`}
+                  >
+                    {item}
+                  </button>
+                )
               ))}
             </div>
 
@@ -405,16 +491,37 @@ function App() {
             onClick={() => setMobileMenuOpen(false)}
           />
           <div className="absolute right-0 top-0 bottom-0 w-80 bg-white shadow-2xl">
-            <div className="p-12 pt-24 flex flex-col gap-8">
-              {NAV_ITEMS.map((item) => (
+            <div className="p-12 pt-24 flex flex-col gap-6">
+              {NAV_ITEMS.filter(item => item !== 'services').map((item) => (
                 <button
                   key={item}
                   onClick={() => navigate(item)}
-                  className="text-left text-sm tracking-[0.18em] text-zinc-700 hover:text-zinc-900 transition-colors font-semibold uppercase"
+                  className={`text-left text-sm tracking-[0.18em] hover:text-zinc-900 transition-colors font-semibold uppercase ${
+                    currentPage === item ? 'text-zinc-900' : 'text-zinc-500'
+                  }`}
                 >
                   {item}
                 </button>
               ))}
+              <div className="pt-4 space-y-4 border-t border-zinc-200">
+                <p className="text-xs uppercase tracking-[0.16em] text-zinc-400 font-medium">Services</p>
+                <button
+                  onClick={() => navigate('services')}
+                  className={`text-left text-sm tracking-[0.18em] hover:text-zinc-900 transition-colors font-semibold uppercase ${
+                    currentPage === 'services' ? 'text-zinc-900' : 'text-zinc-500'
+                  }`}
+                >
+                  Services overview
+                </button>
+                <button
+                  onClick={() => navigate('lease')}
+                  className={`text-left text-sm tracking-[0.18em] hover:text-zinc-900 transition-colors font-semibold uppercase ${
+                    currentPage === 'lease' ? 'text-zinc-900' : 'text-zinc-500'
+                  }`}
+                >
+                  Lease a vehicle
+                </button>
+              </div>
               <button
                 onClick={() => navigate('concierge')}
                 className="mt-4 px-4 py-3 bg-black text-white uppercase tracking-[0.16em] text-xs font-semibold button-primary rounded-none text-left"
@@ -431,7 +538,8 @@ function App() {
       <main className="page-transition">
         {currentPage === 'home' && <HomePage onNavigate={navigate} />}
         {currentPage === 'currency' && <CurrencyExchangePage />}
-        {currentPage === 'services' && <ServicesPage />}
+        {currentPage === 'services' && <ServicesPage onNavigate={navigate} />}
+        {currentPage === 'lease' && <LeasePage onNavigate={navigate} initialVehicle={selectedLeaseVehicle} />}
         {currentPage === 'concierge' && <ConciergePage />}
         {currentPage === 'about' && <AboutPage />}
         {currentPage === 'contact' && <ContactPage />}
@@ -598,25 +706,23 @@ function HomePage({ onNavigate }) {
                 </p>
                 <h3 className="text-3xl md:text-4xl font-semibold leading-tight">Ready to transact.</h3>
               </div>
-              <button
-                onClick={() => onNavigate('services')}
-                className="px-6 py-4 bg-black text-white uppercase tracking-[0.16em] text-xs font-semibold button-primary rounded-none inline-flex items-center gap-2"
-              >
-                View services
-                <ChevronRight size={16} strokeWidth={1} />
-              </button>
+              <span className="tech-data">{INVENTORY_CARDS.length} vehicles available</span>
             </div>
           </Reveal>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {INVENTORY_CARDS.slice(0, 3).map((car) => (
               <Reveal key={car.id}>
-                <div className="border border-zinc-200 bg-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-2">
+                <button
+                  onClick={() => onNavigate('lease', car.id)}
+                  className="group border border-zinc-200 bg-white overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-2 text-left w-full"
+                >
                   {/* Vehicle Image */}
                   <div className="relative aspect-[4/3] overflow-hidden bg-zinc-100">
                     <img
                       src={car.image}
                       alt={car.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-2">
                       <span className="tech-data text-zinc-900">{car.id}</span>
@@ -631,16 +737,27 @@ function HomePage({ onNavigate }) {
                     </div>
 
                     <div className="flex items-baseline justify-between border-t border-zinc-200 pt-3">
-                      <span className="text-xs uppercase tracking-[0.14em] text-zinc-500">From</span>
-                      <span className="text-lg font-semibold">{car.monthlyFrom}/mo</span>
+                      <span className="text-xs uppercase tracking-[0.14em] text-zinc-500">Lease from</span>
+                      <span className="text-lg font-semibold">{car.monthlyFrom}<span className="text-sm text-zinc-500">/mo</span></span>
                     </div>
-
-                    <SpecTable items={car.specs} />
                   </div>
-                </div>
+                </button>
               </Reveal>
             ))}
           </div>
+
+          {/* View all link */}
+          <Reveal>
+            <div className="text-center">
+              <button
+                onClick={() => onNavigate('lease')}
+                className="inline-flex items-center gap-2 px-6 py-4 bg-black text-white uppercase tracking-[0.14em] text-xs font-semibold button-primary rounded-none"
+              >
+                View all vehicles & leasing options
+                <ChevronRight size={16} strokeWidth={1} />
+              </button>
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -868,10 +985,10 @@ function CurrencyExchangePage() {
               <button
                 key={desk}
                 onClick={() => setActiveDesk(desk)}
-                className={`px-4 py-2 text-xs uppercase tracking-[0.14em] border ${
+                className={`px-5 py-3 text-xs uppercase tracking-[0.14em] border transition-all duration-200 ${
                   activeDesk === desk
                     ? 'bg-black text-white border-black'
-                    : 'border-zinc-300 text-zinc-600'
+                    : 'border-zinc-300 text-zinc-600 hover:border-zinc-500'
                 }`}
               >
                 {desk} desk
@@ -992,7 +1109,205 @@ function CurrencyExchangePage() {
   )
 }
 
-function ServicesPage() {
+function LeasePage({ onNavigate, initialVehicle }) {
+  const [selectedVehicle, setSelectedVehicle] = useState(initialVehicle)
+
+  useEffect(() => {
+    if (initialVehicle) {
+      setSelectedVehicle(initialVehicle)
+    }
+  }, [initialVehicle])
+
+  const leaseSteps = [
+    {
+      title: 'Apply',
+      copy: 'Share business/personal details, target monthly payment, and preferred vehicle class.',
+      icon: '01',
+      detail: '5 minutes to complete'
+    },
+    {
+      title: 'Approve',
+      copy: 'We structure terms, confirm documentation requirements, and lock in residual values.',
+      icon: '02',
+      detail: 'Same-day decision possible'
+    },
+    {
+      title: 'Deliver',
+      copy: 'We source and spec the vehicle, finalize paperwork, and arrange white-glove delivery.',
+      icon: '03',
+      detail: 'As fast as 14 days'
+    },
+  ]
+
+  return (
+    <section className="grid-surface py-24 px-6 lg:px-10 min-h-screen">
+      <div className="max-w-6xl mx-auto space-y-16">
+        {/* Breadcrumb */}
+        <nav className="text-sm text-zinc-500 tracking-[0.12em] uppercase">
+          <button onClick={() => onNavigate('services')} className="hover:text-zinc-900 transition-colors">
+            Services
+          </button>
+          <span className="mx-2">/</span>
+          <span className="text-zinc-900">Lease a vehicle</span>
+        </nav>
+
+        {/* Header */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start -mt-8">
+          <Reveal>
+            <h1 className="text-sm tracking-[0.18em] uppercase text-zinc-500 font-semibold mb-4">
+              Lease a vehicle
+            </h1>
+            <p className="text-4xl md:text-5xl font-semibold leading-tight">
+              Structured leases for principals who want flexibility and speed.
+            </p>
+          </Reveal>
+          <Reveal>
+            <div className="lg:pt-8">
+              <p className="text-lg text-zinc-600 leading-relaxed mb-6">
+                Tailored lease programs across supercars, SUVs, and executive vehicles. Terms from 12 to 84 months with
+                same-day credit decisions where possible.
+              </p>
+              <SpecTable
+                items={[
+                  { label: 'Terms', value: '12-84 months' },
+                  { label: 'Structures', value: 'TRAC / Operating / Balloon' },
+                  { label: 'Rates', value: 'From 3.1% APR (OAC)' },
+                  { label: 'Approval', value: 'Same-day credit committee' },
+                ]}
+              />
+            </div>
+          </Reveal>
+        </div>
+
+        {/* Featured vehicles for lease */}
+        <Reveal>
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm tracking-[0.18em] uppercase text-zinc-500 font-semibold">
+                Available for lease
+              </h2>
+              <span className="tech-data">{INVENTORY_CARDS.length} vehicles</span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              {INVENTORY_CARDS.map((car) => (
+                <button
+                  key={car.id}
+                  onClick={() => setSelectedVehicle(selectedVehicle === car.id ? null : car.id)}
+                  className={`p-4 border text-left transition-all duration-200 ${
+                    selectedVehicle === car.id
+                      ? 'border-black bg-zinc-50'
+                      : 'border-zinc-200 hover:border-zinc-400'
+                  }`}
+                >
+                  <span className="tech-data block mb-2">{car.id}</span>
+                  <p className="text-sm font-medium leading-tight truncate">{car.name}</p>
+                  <p className="text-xs text-zinc-500 mt-1">{car.monthlyFrom}/mo</p>
+                </button>
+              ))}
+            </div>
+            {selectedVehicle && (
+              <div className="border border-zinc-200 bg-white p-6 animate-fadeIn">
+                {INVENTORY_CARDS.filter(c => c.id === selectedVehicle).map(car => (
+                  <div key={car.id} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h3 className="text-xl font-semibold mb-2">{car.name}</h3>
+                      <p className="text-sm text-zinc-500 mb-4">Model Year {car.year} &middot; {car.status}</p>
+                      <SpecTable items={car.specs} />
+                    </div>
+                    <div className="flex flex-col justify-between">
+                      <div>
+                        <p className="text-sm text-zinc-500 mb-1">Estimated lease from</p>
+                        <p className="text-3xl font-semibold">{car.monthlyFrom}<span className="text-lg text-zinc-500">/mo</span></p>
+                        <p className="text-xs text-zinc-400 mt-2">Based on 36-month term, 12,000 km/year. OAC.</p>
+                      </div>
+                      <a
+                        href={`mailto:investmenttothemono@gmail.com?subject=Lease Inquiry: ${car.name}&body=Hello, I'm interested in leasing the ${car.year} ${car.name}. Please provide details on available terms.`}
+                        className="mt-4 px-6 py-3 bg-black text-white uppercase tracking-[0.14em] text-xs font-semibold inline-flex items-center gap-2 button-primary rounded-none w-fit"
+                      >
+                        Request quote
+                        <ChevronRight size={14} strokeWidth={1} />
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </Reveal>
+
+        {/* Process steps */}
+        <Reveal>
+          <div className="space-y-8">
+            <h2 className="text-sm tracking-[0.18em] uppercase text-zinc-500 font-semibold">
+              How it works
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-0">
+              {leaseSteps.map((item, idx) => (
+                <div
+                  key={item.title}
+                  className={`relative border border-zinc-200 bg-white p-6 lg:p-8 flex flex-col gap-4 ${
+                    idx > 0 ? 'md:-ml-px' : ''
+                  }`}
+                >
+                  {/* Connector line on desktop */}
+                  {idx < leaseSteps.length - 1 && (
+                    <div className="hidden md:block absolute top-1/2 -right-3 w-6 h-px bg-zinc-300 z-10" />
+                  )}
+                  <div className="flex items-start justify-between">
+                    <div className="w-12 h-12 border-2 border-zinc-900 flex items-center justify-center">
+                      <span className="text-lg font-semibold">{item.icon}</span>
+                    </div>
+                    <span className="tech-data text-zinc-400">{item.detail}</span>
+                  </div>
+                  <h3 className="text-xl font-semibold">{item.title}</h3>
+                  <p className="text-sm text-zinc-600 leading-relaxed">{item.copy}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Reveal>
+
+        {/* CTA Section */}
+        <Reveal>
+          <div className="border border-zinc-200 bg-gradient-to-br from-zinc-50 to-white p-8 lg:p-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+              <div className="space-y-4">
+                <h3 className="text-2xl md:text-3xl font-semibold">Ready to start your lease?</h3>
+                <p className="text-base text-zinc-600 leading-relaxed">
+                  Share your target vehicle, budget, and preferred term. Our team will respond within one business day
+                  with a tailored proposal.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 lg:justify-end">
+                <a
+                  href="mailto:investmenttothemono@gmail.com?subject=Lease Request&body=Hello, I would like to start a lease.%0A%0AVehicle:%0ABudget:%0ATerm:%0A"
+                  className="px-6 py-4 bg-black text-white uppercase tracking-[0.14em] text-xs font-semibold inline-flex items-center justify-center gap-2 button-primary rounded-none"
+                >
+                  Email leasing team
+                  <ChevronRight size={14} strokeWidth={1} />
+                </a>
+                <a
+                  href="tel:+16046746299"
+                  className="px-6 py-4 button-ghost rounded-none uppercase tracking-[0.14em] text-xs font-semibold inline-flex items-center justify-center gap-2"
+                >
+                  Call +1 (604) 674-6299
+                </a>
+              </div>
+            </div>
+            <div className="mt-8 pt-6 border-t border-zinc-200">
+              <p className="tech-data">
+                DISCLAIMERS: On approved credit. Taxes, fees, and security deposits may apply. Terms and availability subject to change.
+                Residual values and rates vary by vehicle and term length.
+              </p>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  )
+}
+
+function ServicesPage({ onNavigate }) {
   return (
     <section className="grid-surface py-24 px-6 lg:px-10 min-h-screen">
       <div className="max-w-6xl mx-auto space-y-12">
@@ -1066,13 +1381,22 @@ function ServicesPage() {
             <p className="text-base text-zinc-600 mb-6 max-w-2xl mx-auto">
               Schedule a confidential consultation to discuss your investment objectives and allocation strategy.
             </p>
-            <a
-              href="mailto:investmenttothemono@gmail.com?subject=Portfolio Consultation Request&body=Hello, I would like to schedule a consultation to discuss automotive investment opportunities."
-              className="px-8 py-4 bg-black text-white uppercase tracking-[0.16em] text-xs font-semibold button-primary rounded-none inline-flex items-center gap-2"
-            >
-              Schedule consultation
-              <ChevronRight size={14} strokeWidth={1} />
-            </a>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <a
+                href="mailto:investmenttothemono@gmail.com?subject=Portfolio Consultation Request&body=Hello, I would like to schedule a consultation to discuss automotive investment opportunities."
+                className="px-8 py-4 bg-black text-white uppercase tracking-[0.16em] text-xs font-semibold button-primary rounded-none inline-flex items-center gap-2"
+              >
+                Schedule consultation
+                <ChevronRight size={14} strokeWidth={1} />
+              </a>
+              <button
+                onClick={() => onNavigate('lease')}
+                className="px-8 py-4 button-ghost rounded-none uppercase tracking-[0.16em] text-xs font-semibold inline-flex items-center gap-2"
+              >
+                Explore leasing
+                <ChevronRight size={14} strokeWidth={1} />
+              </button>
+            </div>
           </div>
         </Reveal>
       </div>
@@ -1083,14 +1407,38 @@ function ServicesPage() {
 function ConciergePage() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
-  const handleSubmit = (e) => {
+  // TODO: Replace with your Formspree form ID from https://formspree.io
+  // Create a free account, add a new form, and copy the form ID
+  const FORMSPREE_ID = 'xyzformid' // e.g., 'xwkgjqpb'
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-    setTimeout(() => {
-      setSubmitted(true)
+    setError(null)
+
+    const formData = new FormData(e.target)
+
+    try {
+      const response = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Accept: 'application/json',
+        },
+      })
+
+      if (response.ok) {
+        setSubmitted(true)
+      } else {
+        setError('Something went wrong. Please try again or contact us directly.')
+      }
+    } catch {
+      setError('Network error. Please check your connection and try again.')
+    } finally {
       setLoading(false)
-    }, 500)
+    }
   }
 
   return (
@@ -1111,83 +1459,116 @@ function ConciergePage() {
           </p>
         </Reveal>
 
-        {submitted && (
-          <div className="border border-zinc-300 bg-white px-6 py-4 text-sm text-zinc-700">
-            Request received. Concierge will respond within one business day with next steps.
-          </div>
-        )}
+        {submitted ? (
+          <Reveal>
+            <div className="border border-zinc-200 bg-gradient-to-br from-zinc-50 to-white p-8 lg:p-12 text-center space-y-4">
+              <div className="w-16 h-16 mx-auto border-2 border-zinc-900 flex items-center justify-center mb-6">
+                <ChevronRight size={24} strokeWidth={1.5} className="text-zinc-900" />
+              </div>
+              <h3 className="text-2xl font-semibold">Request received</h3>
+              <p className="text-base text-zinc-600 leading-relaxed max-w-md mx-auto">
+                A member of our concierge team will contact you within one business day to discuss your requirements.
+              </p>
+              <div className="pt-6">
+                <button
+                  onClick={() => setSubmitted(false)}
+                  className="px-6 py-3 text-zinc-600 hover:text-zinc-900 uppercase tracking-[0.14em] text-xs font-semibold transition-colors"
+                >
+                  Submit another request
+                </button>
+              </div>
+            </div>
+          </Reveal>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {error && (
+              <div className="p-4 border border-red-200 bg-red-50 text-red-700 text-sm">
+                {error}
+              </div>
+            )}
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          <div>
-            <label className="block text-sm tracking-[0.14em] uppercase text-zinc-600 font-semibold mb-3">
-              Full name
-            </label>
-            <input
-              type="text"
-              required
-              className="w-full border-0 border-b border-zinc-300 bg-transparent pb-3 focus:outline-none focus:border-zinc-900 transition-colors text-base font-medium"
-              placeholder="John Smith"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm tracking-[0.14em] uppercase text-zinc-600 font-semibold mb-3">
-              Email address
-            </label>
-            <input
-              type="email"
-              required
-              className="w-full border-0 border-b border-zinc-300 bg-transparent pb-3 focus:outline-none focus:border-zinc-900 transition-colors text-base font-medium"
-              placeholder="john@example.com"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm tracking-[0.14em] uppercase text-zinc-600 font-semibold mb-3">
-                Phone number
+            <div className="form-field">
+              <label className="block text-sm tracking-[0.14em] uppercase text-zinc-500 font-semibold mb-3">
+                Full name
               </label>
               <input
-                type="tel"
+                type="text"
+                name="name"
                 required
-                className="w-full border-0 border-b border-zinc-300 bg-transparent pb-3 focus:outline-none focus:border-zinc-900 transition-colors text-base font-medium"
-                placeholder="+1 (604) 674-6299"
+                className="form-input-enhanced"
+                placeholder="John Smith"
               />
             </div>
-            <div>
-              <label className="block text-sm tracking-[0.14em] uppercase text-zinc-600 font-semibold mb-3">
-                Desired vehicle
+
+            <div className="form-field">
+              <label className="block text-sm tracking-[0.14em] uppercase text-zinc-500 font-semibold mb-3">
+                Email address
               </label>
-              <select className="w-full border-0 border-b border-zinc-300 bg-transparent pb-3 focus:outline-none focus:border-zinc-900 transition-colors text-base font-medium">
-                <option>Select category</option>
-                <option>Vintage Classics</option>
-                <option>Modern Supercars</option>
-                <option>Executive Fleets</option>
-                <option>Custom Specification</option>
-              </select>
+              <input
+                type="email"
+                name="email"
+                required
+                className="form-input-enhanced"
+                placeholder="john@example.com"
+              />
             </div>
-          </div>
 
-          <div>
-            <label className="block text-sm tracking-[0.14em] uppercase text-zinc-600 font-semibold mb-3">
-              Requirements
-            </label>
-            <textarea
-              rows="5"
-              className="w-full border-0 border-b border-zinc-300 bg-transparent pb-3 focus:outline-none focus:border-zinc-900 transition-colors resize-none text-base font-medium"
-              placeholder="Describe your acquisition criteria..."
-              required
-            />
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="form-field">
+                <label className="block text-sm tracking-[0.14em] uppercase text-zinc-500 font-semibold mb-3">
+                  Phone number
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  required
+                  className="form-input-enhanced"
+                  placeholder="+1 (604) 674-6299"
+                />
+              </div>
+              <div className="form-field">
+                <label className="block text-sm tracking-[0.14em] uppercase text-zinc-500 font-semibold mb-3">
+                  Desired vehicle
+                </label>
+                <select name="vehicle_category" className="form-input-enhanced cursor-pointer" defaultValue="">
+                  <option value="" disabled>Select category</option>
+                  <option>Vintage Classics</option>
+                  <option>Modern Supercars</option>
+                  <option>Executive Fleets</option>
+                  <option>Custom Specification</option>
+                </select>
+              </div>
+            </div>
 
-          <button
-            type="submit"
-            className="w-full py-5 bg-black text-white uppercase tracking-[0.16em] text-xs font-semibold button-primary rounded-none mt-4"
-            disabled={loading}
-          >
-            {loading ? 'Processing...' : 'Request consultation'}
-          </button>
-        </form>
+            <div className="form-field">
+              <label className="block text-sm tracking-[0.14em] uppercase text-zinc-500 font-semibold mb-3">
+                Requirements
+              </label>
+              <textarea
+                name="requirements"
+                rows="5"
+                className="form-input-enhanced resize-none"
+                placeholder="Describe your acquisition criteria..."
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-5 bg-black text-white uppercase tracking-[0.16em] text-xs font-semibold button-primary rounded-none mt-4 flex items-center justify-center gap-3"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="loading-spinner" />
+                  Processing
+                </>
+              ) : (
+                'Request consultation'
+              )}
+            </button>
+          </form>
+        )}
 
         <div className="pt-10 border-t border-zinc-200 tech-data text-center">
           RESPONSE TIME: UNDER 24 HOURS / CONFIDENTIALITY: GUARANTEED / CHANNEL: ENCRYPTED
@@ -1236,7 +1617,7 @@ function AboutPage() {
                 <h3 className="text-lg font-semibold tracking-[0.12em] uppercase">{member.name}</h3>
                 <p className="text-sm text-zinc-600 tracking-[0.12em] uppercase">{member.title}</p>
                 <p className="text-sm text-zinc-600 leading-relaxed">
-                  Twenty-year track record in acquisitions, finance, and private client advisory.
+                  {member.bio}
                 </p>
               </div>
             </Reveal>
@@ -1412,10 +1793,14 @@ const Footer = ({ navigate }) => (
           </button>
         </div>
       </div>
-      <div className="pt-6 border-t border-zinc-200 text-center">
+      <div className="pt-6 border-t border-zinc-200 flex flex-col sm:flex-row items-center justify-between gap-4">
         <p className="text-xs text-zinc-500 tracking-[0.16em]">
-          (c) 2024 Tothemono Investments Ltd. All rights reserved.
+          &copy; {new Date().getFullYear()} Tothemono Investments Ltd. All rights reserved.
         </p>
+        <div className="flex items-center gap-6 text-xs text-zinc-500 tracking-[0.12em]">
+          <button className="hover:text-zinc-900 transition-colors">Privacy Policy</button>
+          <button className="hover:text-zinc-900 transition-colors">Terms of Service</button>
+        </div>
       </div>
     </div>
   </footer>
